@@ -15,7 +15,7 @@
         /* HERO SECTION */
         .hero {
             position: relative;
-            min-height: 85vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -36,7 +36,7 @@
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.35);
+            background: rgba(0,0,0,0.4);
             z-index: 1;
         }
         .hero-content { position: relative; z-index: 2; }
@@ -47,6 +47,42 @@
             background: rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08);
+        }
+
+        /* MUSIC SECTION STYLES */
+        .music-player-hero {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 8px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .music-player-hero:hover { background: rgba(255, 255, 255, 0.25); }
+        
+        .disc {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f472b6;
+            font-size: 14px;
+            animation: spin 3s linear infinite;
+            animation-play-state: paused;
+        }
+        .playing .disc { animation-play-state: running; }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* FLOATING HEARTS */
@@ -72,11 +108,14 @@
         }
 
         .floral-divider { color: #f472b6; font-size: 1.2rem; margin: 0.8rem 0; }
-        section { border-bottom: 1px solid rgba(244, 114, 182, 0.05); }
     </style>
 </head>
 
 <body class="text-gray-800 antialiased">
+
+    <audio id="bgMusic" loop>
+        <source src="https://raw.githubusercontent.com/DearlyWed/aparna-akshai/main/music02.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="heart-container"></div>
 
@@ -84,7 +123,16 @@
         <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1519741497674-611481863552');"></div>
         <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc');"></div>
         <div class="hero-overlay"></div>
+        
         <div class="hero-content max-w-3xl px-6">
+            <div id="music-trigger" class="music-player-hero" onclick="toggleMusic()">
+                <div class="disc" id="disc-icon">♫</div>
+                <div class="text-left">
+                    <p class="text-[8px] uppercase tracking-widest leading-none opacity-80">Tap to play music</p>
+                    <p id="music-status" class="text-[10px] font-medium tracking-wider">Sound: Off</p>
+                </div>
+            </div>
+
             <p class="tracking-[0.3em] uppercase mb-4 text-[10px] font-light">Together With Their Families</p>
             <h1 class="text-5xl md:text-7xl font-bold mb-4 italic">
                 Aparna <span class="text-pink-300 font-normal">&</span> Akshai
@@ -142,7 +190,7 @@
                 <p class="font-medium text-pink-600">Sunday, 05 April 2026</p>
                 <p>10:00 AM</p>
             </div>
-            <a href="https://maps.app.goo.gl/2ojsUVKizUBPP1e29" target="_blank">
+            <a href="https://maps.google.com" target="_blank">
                 <button class="bg-gray-900 text-white hover:bg-pink-600 transition-colors px-10 py-3 rounded-full text-[10px] uppercase tracking-[0.2em]">
                     View on Google Maps
                 </button>
@@ -232,6 +280,24 @@
     </script>
 
     <script>
+        // MUSIC CONTROLS
+        const music = document.getElementById('bgMusic');
+        const trigger = document.getElementById('music-trigger');
+        const statusText = document.getElementById('music-status');
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                trigger.classList.add('playing');
+                statusText.innerText = "Sound: On";
+            } else {
+                music.pause();
+                trigger.classList.remove('playing');
+                statusText.innerText = "Sound: Off";
+            }
+        }
+
+        // Global functions
         function createHeart() {
             const container = document.getElementById('heart-container');
             const heart = document.createElement('div');
@@ -266,7 +332,11 @@
             slides[slideIndex].classList.add('active');
         }, 5000);
 
-        function scrollToDetails() { document.getElementById('details').scrollIntoView({ behavior: 'smooth' }); }
+        function scrollToDetails() { 
+            document.getElementById('details').scrollIntoView({ behavior: 'smooth' }); 
+            // Attempt to start music on scroll action
+            if (music.paused) toggleMusic();
+        }
     </script>
 </body>
 </html>
