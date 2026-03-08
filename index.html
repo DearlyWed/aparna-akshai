@@ -223,6 +223,9 @@
             </button>
         </div>
         <div id="wishes-display" class="max-w-lg mx-auto mt-8 space-y-3 px-4"></div>
+        <button id="showMoreBtn" class="mt-6 text-pink-500 text-[10px] uppercase tracking-[0.2em] font-bold hidden hover:text-pink-700 transition-colors">
+            See More Wishes
+        </button>
     </section>
 
     <footer class="text-center py-12 px-6 bg-white border-t border-gray-50">
@@ -255,6 +258,38 @@
         const db = getDatabase(app);
         const wishesRef = ref(db, 'wishes');
 
+        let allWishes = [];
+        let isExpanded = false;
+
+        const renderWishes = () => {
+            const container = document.getElementById('wishes-display');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            
+            if (allWishes.length === 0) {
+                container.innerHTML = "<p class='text-xs italic text-gray-400'>No wishes yet.</p>";
+                showMoreBtn.classList.add('hidden');
+                return;
+            }
+
+            // Slice to show only last 3 if not expanded
+            const wishesToShow = isExpanded ? allWishes : allWishes.slice(0, 3);
+
+            container.innerHTML = wishesToShow.map(w => `
+                <div class="glass p-4 rounded-xl text-left border-none">
+                    <strong class="text-pink-600 text-[10px] uppercase tracking-wider">${w.name}</strong>
+                    <p class="text-sm mt-1 text-gray-700">${w.message}</p>
+                </div>
+            `).join('');
+
+            // Only show the button if there are more than 3 wishes
+            if (allWishes.length > 3) {
+                showMoreBtn.classList.remove('hidden');
+                showMoreBtn.innerText = isExpanded ? "Show Less" : "See More Wishes";
+            } else {
+                showMoreBtn.classList.add('hidden');
+            }
+        };
+
         window.postWish = () => {
             const name = document.getElementById('guestName').value;
             const message = document.getElementById('guestMessage').value;
@@ -263,19 +298,21 @@
             document.getElementById('guestName').value = "";
             document.getElementById('guestMessage').value = "";
         };
+
         document.getElementById('sendWishBtn').addEventListener('click', postWish);
+        document.getElementById('showMoreBtn').addEventListener('click', () => {
+            isExpanded = !isExpanded;
+            renderWishes();
+        });
 
         onValue(wishesRef, (snapshot) => {
-            const container = document.getElementById('wishes-display');
             const data = snapshot.val();
-            if (!data) { container.innerHTML = "<p class='text-xs italic text-gray-400'>No wishes yet.</p>"; return; }
-            const wishesArray = Object.values(data).reverse();
-            container.innerHTML = wishesArray.map(w => `
-                <div class="glass p-4 rounded-xl text-left border-none">
-                    <strong class="text-pink-600 text-[10px] uppercase tracking-wider">${w.name}</strong>
-                    <p class="text-sm mt-1 text-gray-700">${w.message}</p>
-                </div>
-            `).join('');
+            if (data) {
+                allWishes = Object.values(data).reverse();
+                renderWishes();
+            } else {
+                renderWishes();
+            }
         });
     </script>
 
@@ -334,7 +371,6 @@
 
         function scrollToDetails() { 
             document.getElementById('details').scrollIntoView({ behavior: 'smooth' }); 
-            // Attempt to start music on scroll action
             if (music.paused) toggleMusic();
         }
     </script>
