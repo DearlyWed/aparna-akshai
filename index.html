@@ -190,7 +190,7 @@
                 <p class="font-medium text-pink-600">Sunday, 05 April 2026</p>
                 <p>10:00 AM</p>
             </div>
-            <a href="https://maps.google.com" target="_blank">
+            <a href="https://maps.app.goo.gl/rwYLXGTXHJC7899m9" target="_blank">
                 <button class="bg-gray-900 text-white hover:bg-pink-600 transition-colors px-10 py-3 rounded-full text-[10px] uppercase tracking-[0.2em]">
                     View on Google Maps
                 </button>
@@ -271,7 +271,6 @@
                 return;
             }
 
-            // Slice to show only last 3 if not expanded
             const wishesToShow = isExpanded ? allWishes : allWishes.slice(0, 3);
 
             container.innerHTML = wishesToShow.map(w => `
@@ -281,7 +280,6 @@
                 </div>
             `).join('');
 
-            // Only show the button if there are more than 3 wishes
             if (allWishes.length > 3) {
                 showMoreBtn.classList.remove('hidden');
                 showMoreBtn.innerText = isExpanded ? "Show Less" : "See More Wishes";
@@ -317,7 +315,6 @@
     </script>
 
     <script>
-        // MUSIC CONTROLS
         const music = document.getElementById('bgMusic');
         const trigger = document.getElementById('music-trigger');
         const statusText = document.getElementById('music-status');
@@ -334,7 +331,6 @@
             }
         }
 
-        // Global functions
         function createHeart() {
             const container = document.getElementById('heart-container');
             const heart = document.createElement('div');
